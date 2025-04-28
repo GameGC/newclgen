@@ -123,11 +123,11 @@ app.get('/api/generate-pdff', async (req, res) => {
         // Generate final modified DOCX buffer
         const bufferDocx = doc.getZip().generate({ type: 'nodebuffer' });
 
-        const tmpFilePath = path.resolve(__dirname, 'data', 'generated.docx');
-        const tmpFilePath2 = path.resolve(__dirname, 'data', 'generated.pdf');
+        //const tmpFilePath = path.resolve(__dirname, 'data', 'generated.docx');
+        //const tmpFilePath2 = path.resolve(__dirname, 'data', 'generated.pdf');
 
-       // const tmpFilePath = path.join(tmpdir(), 'generated.docx');
-       //x const tmpFilePath2 = path.join(tmpdir(), 'generated.pdf');
+        const tmpFilePath = path.join(tmpdir(), 'generated.docx');
+        const tmpFilePath2 = path.join(tmpdir(), 'generated.pdf');
         fs.writeFileSync(tmpFilePath, bufferDocx);
 
 
