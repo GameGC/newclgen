@@ -9,7 +9,7 @@ const app = express();
 
 const convertAsync = promisify(libre.convert);
 
-app.get('/generate-pdf', async (req, res) => {
+app.get('/api/generate-pdf', async (req, res) => {
     try {
         const msgText = req.query.msgText || 'Default Text';
 
