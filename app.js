@@ -133,8 +133,9 @@ app.get('/api/generate-pdff', async (req, res) => {
 
         // Convert DOCX buffer to PDF
 
-        var pdfBuffer = await convert(wordBuffer);
+        await convert(tmpFilePath,tmpFilePath2);
 
+        var pdfBuffer = fs.readFileSync(tmpFilePath2);
 
                 // Send the generated PDF as a response
                 res.set({
