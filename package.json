@@ -11,6 +11,7 @@
     "express": "~4.16.1",
     "libreoffice-convert": "^1.6.1",
     "morgan": "~1.9.1",
-    "pizzip": "^3.1.8"
+    "pizzip": "^3.1.8",
+    "serverless-http": "^3.2.0"
   }
 }

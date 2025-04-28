@@ -57,5 +57,5 @@ app.get('/api/generate-pdf', async (req, res) => {
     }
 });
 
-
-module.exports = app;
+const serverless = require('serverless-http');
+module.exports = serverless(app);
