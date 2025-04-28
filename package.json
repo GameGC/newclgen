@@ -8,9 +8,13 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "docx-pdf": "^0.0.1",
+    "docx2pdf-converter": "^2.1.1",
+    "docxtemplater": "^3.61.1",
     "express": "~4.16.1",
     "libreoffice-convert": "^1.6.1",
     "morgan": "~1.9.1",
+    "office-to-pdf": "^4.0.0",
     "pizzip": "^3.1.8",
     "serverless-http": "^3.2.0"
   }
