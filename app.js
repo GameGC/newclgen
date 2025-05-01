@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const PizZip = require('pizzip');
-const libre = require('libreoffice-convert');
+//const libre = require('libreoffice-convert');
 const { promisify } = require('util');
 const filesRouter = require('./routes/files');  // import your router
 
@@ -18,6 +18,8 @@ const mammoth = require('mammoth');
 const puppeteer = require('puppeteer');
 
 const app = express();
+app.use(express.json());
+
 // Configure CORS to allow all origins
 app.use(cors({
     origin: '*',  // Allow all origins
@@ -27,9 +29,10 @@ app.use(cors({
     optionsSuccessStatus: 204,  // Use this status for successful OPTIONS requests
 }));
 
-const convertAsync = promisify(libre.convert);
+//const convertAsync = promisify(libre.convert);
 
 app.use('/api/files', filesRouter);
+/*
 app.get('/api/generate-pdf', async (req, res) => {
     try {
         const msgText = req.query.msgText || 'Default Text';
@@ -65,7 +68,7 @@ app.get('/api/generate-pdf', async (req, res) => {
         console.error('Error generating PDF:', error);
         res.status(500).send('Failed to generate PDF.');
     }
-});
+});*/
 
 app.post('/api/generate-docx', async (req, res) => {
     try {
@@ -109,6 +112,7 @@ app.post('/api/generate-docx', async (req, res) => {
         res.status(500).send('Failed to generate DOCX.');
     }
 });
+/*
 app.get('/api/generate-pdff', async (req, res) => {
     try {
         const msgText = req.query.msgText || 'Default Text';
@@ -166,8 +170,8 @@ app.get('/api/generate-pdff', async (req, res) => {
         console.error('Error generating DOCX:', error);
         res.status(500).send('Failed to generate DOCX.');
     }
-});
-
+});*/
+/*
 async function convertDocxToPdf(docxPath, pdfPath) {
     try {
         // Step 1: Read DOCX and extract HTML
@@ -193,7 +197,7 @@ async function convertDocxToPdf(docxPath, pdfPath) {
     } catch (error) {
         console.error('Error:', error);
     }
-}
+}*/
 
 function TodayDateFormatted(){
     // Prepare today's date
