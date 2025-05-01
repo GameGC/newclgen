@@ -72,7 +72,7 @@ app.get('/api/generate-pdf', async (req, res) => {
 
 app.post('/api/generate-docx', async (req, res) => {
     try {
-        const msgText = req.body.msgText.replace(/<br\s*\/?>/g, '\n')|| 'Default Text';
+        const msgText = req.body.msgText.replace(/<br\s*\/?>/g, '<w:br/>')|| 'Default Text';
 
         // Read DOCX template
         const templatePath = path.resolve(__dirname, 'data', 'cl-template.docx');
