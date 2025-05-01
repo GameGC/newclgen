@@ -8,8 +8,6 @@ const filesRouter = require('./routes/files');  // import your router
 
 const cors = require('cors');
 
-// Use CORS middleware to allow all origins
-app.use(cors());
 
 // Use the files router
 const Docxtemplater = require('docxtemplater');
@@ -20,6 +18,15 @@ const mammoth = require('mammoth');
 const puppeteer = require('puppeteer');
 
 const app = express();
+// Configure CORS to allow all origins
+const corsOptions = {
+    origin: '*', // This allows all origins
+    methods: ['GET', 'POST'], // Allowed HTTP methods
+    allowedHeaders: ['Content-Type'], // Allow Content-Type header
+};
+
+// Use CORS middleware with the options
+app.use(cors(corsOptions));
 
 const convertAsync = promisify(libre.convert);
 
