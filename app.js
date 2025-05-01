@@ -19,14 +19,13 @@ const puppeteer = require('puppeteer');
 
 const app = express();
 // Configure CORS to allow all origins
-const corsOptions = {
-    origin: '*', // This allows all origins
-    methods: ['GET', 'POST'], // Allowed HTTP methods
-    allowedHeaders: ['Content-Type'], // Allow Content-Type header
-};
-
-// Use CORS middleware with the options
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: '*',  // Allow all origins
+    methods: ['GET', 'POST', 'OPTIONS'], // Allow the necessary methods
+    allowedHeaders: ['Content-Type'],  // Allow specific headers
+    preflightContinue: false,  // Handle the preflight response automatically
+    optionsSuccessStatus: 204,  // Use this status for successful OPTIONS requests
+}));
 
 const convertAsync = promisify(libre.convert);
 
