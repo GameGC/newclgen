@@ -4,15 +4,26 @@ const path = require('path');
 const PizZip = require('pizzip');
 const libre = require('libreoffice-convert');
 const { promisify } = require('util');
+const filesRouter = require('./routes/files');  // import your router
 
+const cors = require('cors');
+
+// Use CORS middleware to allow all origins
+app.use(cors());
+
+// Use the files router
 const Docxtemplater = require('docxtemplater');
 const {convert} = require('docx2pdf-converter');
 const { tmpdir } = require('os');
+
+const mammoth = require('mammoth');
+const puppeteer = require('puppeteer');
 
 const app = express();
 
 const convertAsync = promisify(libre.convert);
 
+app.use('/api/files', filesRouter);
 app.get('/api/generate-pdf', async (req, res) => {
     try {
         const msgText = req.query.msgText || 'Default Text';
@@ -50,9 +61,9 @@ app.get('/api/generate-pdf', async (req, res) => {
     }
 });
 
-app.get('/api/generate-docx', async (req, res) => {
+app.post('/api/generate-docx', async (req, res) => {
     try {
-        const msgText = req.query.msgText || 'Default Text';
+        const msgText = req.body.msgText || 'Default Text';
 
         // Read DOCX template
         const templatePath = path.resolve(__dirname, 'data', 'cl-template.docx');
@@ -123,17 +134,18 @@ app.get('/api/generate-pdff', async (req, res) => {
         // Generate final modified DOCX buffer
         const bufferDocx = doc.getZip().generate({ type: 'nodebuffer' });
 
-        //const tmpFilePath = path.resolve(__dirname, 'data', 'generated.docx');
-        //const tmpFilePath2 = path.resolve(__dirname, 'data', 'generated.pdf');
+        const tmpFilePath = path.resolve(__dirname, 'data', 'generated.docx');
+        const tmpFilePath2 = path.resolve(__dirname, 'data', 'output-cl-template.pdf');
 
-        const tmpFilePath = path.join(tmpdir(), 'generated.docx');
-        const tmpFilePath2 = path.join(tmpdir(), 'generated.pdf');
+        //const tmpFilePath = path.join(tmpdir(), 'generated.docx');
+       // const tmpFilePath2 = path.join(tmpdir(), 'output-cl-template.pdf');
         fs.writeFileSync(tmpFilePath, bufferDocx);
 
+        await convertDocxToPdf(tmpFilePath, tmpFilePath2);
 
         // Convert DOCX buffer to PDF
 
-        await convert(tmpFilePath,tmpFilePath2);
+       // await convert(tmpFilePath,tmpFilePath2);
 
         var pdfBuffer = fs.readFileSync(tmpFilePath2);
 
@@ -150,7 +162,32 @@ app.get('/api/generate-pdff', async (req, res) => {
     }
 });
 
+async function convertDocxToPdf(docxPath, pdfPath) {
+    try {
+        // Step 1: Read DOCX and extract HTML
+        const { value: htmlContent } = await mammoth.convertToHtml({ path: docxPath },{ });
 
+        // Step 2: Generate PDF from HTML using Puppeteer
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            headless: true
+        });
+        const page = await browser.newPage();
+
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+        await page.pdf({
+            path: pdfPath,
+            format: 'A4',
+            printBackground: true
+        });
+
+        await browser.close();
+        console.log('Successfully created PDF:', pdfPath);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
 function TodayDateFormatted(){
     // Prepare today's date
