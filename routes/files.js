@@ -1,9 +1,7 @@
-// api/files.js
-
 var express = require('express');
 var router = express.Router();
 const { put, list } = require('@vercel/blob');
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 // ---------------------------
 // Upload endpoint: POST /api/files/upload?filename=yourfile.docx
@@ -71,15 +69,17 @@ router.get('/file/:filename', async (req, res) => {
   try {
     const blobUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}.vercel-blob.vercel-storage.com/${filename}`;
 
-    const response = await fetch(blobUrl);
-    if (!response.ok) {
+    // Use axios to fetch the file content
+    const response = await axios.get(blobUrl, { responseType: 'stream' });
+    if (response.status !== 200) {
       return res.status(404).json({ message: 'File not found' });
     }
 
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Type', response.headers.get('content-type'));
+    res.setHeader('Content-Type', response.headers['content-type']);
 
-    response.body.pipe(res);
+    // Pipe the response body to the client
+    response.data.pipe(res);
 
   } catch (error) {
     console.error('Get file error:', error);

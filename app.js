@@ -5,7 +5,6 @@ const PizZip = require('pizzip');
 //const libre = require('libreoffice-convert');
 const { promisify } = require('util');
 const filesRouter = require('./routes/files');  // import your router
-const fetch = require('node-fetch');  // CommonJS require syntax
 
 const cors = require('cors');
 
