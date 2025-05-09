@@ -14,13 +14,16 @@ router.post('/upload', async (req, res) => {
   }
 
   try {
-    const fileBuffer = await readRequestBody(req); // Read raw file
+    const fileBuffer = await readRequestBody(req);
 
     if (!fileBuffer || fileBuffer.length === 0) {
       return res.status(400).json({ message: 'Empty file' });
     }
 
-    const blob = await put(filename, fileBuffer, { access: 'public' });
+    const blob = await put(filename, fileBuffer, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN, // ✅ Token passed here
+    });
 
     res.status(200).json({
       message: 'File uploaded successfully!',
@@ -39,7 +42,9 @@ router.post('/upload', async (req, res) => {
 // ---------------------------
 router.get('/list', async (req, res) => {
   try {
-    const { blobs } = await list();
+    const { blobs } = await list({
+      token: process.env.BLOB_READ_WRITE_TOKEN, // ✅ Token passed here
+    });
 
     const files = blobs.map(blob => ({
       filename: blob.pathname.replace('/', ''),
@@ -69,7 +74,6 @@ router.get('/file/:filename', async (req, res) => {
   try {
     const blobUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}.vercel-blob.vercel-storage.com/${filename}`;
 
-    // Use axios to fetch the file content
     const response = await axios.get(blobUrl, { responseType: 'stream' });
     if (response.status !== 200) {
       return res.status(404).json({ message: 'File not found' });
@@ -78,7 +82,6 @@ router.get('/file/:filename', async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', response.headers['content-type']);
 
-    // Pipe the response body to the client
     response.data.pipe(res);
 
   } catch (error) {
@@ -93,9 +96,9 @@ router.get('/file/:filename', async (req, res) => {
 function readRequestBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('data', chunk => chunks.push(chunk));
     req.on('end', () => resolve(Buffer.concat(chunks)));
-    req.on('error', (err) => reject(err));
+    req.on('error', err => reject(err));
   });
 }
 
