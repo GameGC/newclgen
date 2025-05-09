@@ -16,6 +16,7 @@ const { tmpdir } = require('os');
 
 const mammoth = require('mammoth');
 const puppeteer = require('puppeteer');
+const {get} = require("axios");
 
 const app = express();
 app.use(express.json());
@@ -73,13 +74,13 @@ app.get('/api/generate-pdf', async (req, res) => {
 app.post('/api/generate-docx', async (req, res) => {
     try {
         const msgText = req.body.msgText.replace(/<br\s*\/?>/g, '<w:br/>')|| 'Default Text';
+        const templateId = req.body.name;
 
-        // Read DOCX template
-        const templatePath = path.resolve(__dirname, 'data', 'cl-template.docx');
-        const content = await fs.promises.readFile(templatePath, 'binary');
+        const blobUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}.vercel-blob.vercel-storage.com/${templateId}`;
+        const response = await get(blobUrl, { responseType: 'arraybuffer' });
 
         // Load DOCX into PizZip
-        const zip = new PizZip(content);
+        const zip = new PizZip(response.data);
 
         // Read original document.xml
         const documentXml = zip.file('word/document.xml').asText();
