@@ -78,6 +78,10 @@ app.post('/api/generate-docx', async (req, res) => {
 
         const blobUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}.vercel-blob.vercel-storage.com/${templateId}`;
         const response = await get(blobUrl, { responseType: 'arraybuffer' });
+        if (response.status !== 200) {
+            console.log(blobUrl);
+            return res.status(404).json({ message: 'File not found in storage' });
+        }
 
         // Load DOCX into PizZip
         const zip = new PizZip(response.data);
