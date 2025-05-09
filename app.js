@@ -74,11 +74,11 @@ app.get('/api/generate-pdf', async (req, res) => {
 app.post('/api/generate-docx', async (req, res) => {
     try {
         const msgText = req.body.msgText.replace(/<br\s*\/?>/g, '<w:br/>')|| 'Default Text';
-        const templateId = req.body.name;
 
-        const blobUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}.vercel-blob.vercel-storage.com/${templateId}`;
+        const templateId = req.body.name;
+        const blobUrl = `https://${req.body.url}.vercel-blob.vercel-storage.com/${templateId}`;
         console.log(blobUrl);
-        
+
         const response = await get(blobUrl, { responseType: 'arraybuffer' });
         if (response.status !== 200) {
             return res.status(404).json({ message: 'File not found in storage' });
