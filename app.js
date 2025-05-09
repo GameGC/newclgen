@@ -76,7 +76,7 @@ app.post('/api/generate-docx', async (req, res) => {
         const msgText = req.body.msgText.replace(/<br\s*\/?>/g, '<w:br/>')|| 'Default Text';
 
         const templateId = req.body.name;
-        const blobUrl = `https://${req.body.url}.vercel-blob.vercel-storage.com/${templateId}`;
+        const blobUrl = `https://${req.body.urlPart}.public.blob.vercel-storage.com/${templateId}`;
         console.log(blobUrl);
 
         const response = await get(blobUrl, { responseType: 'arraybuffer' });
